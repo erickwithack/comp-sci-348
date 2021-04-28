@@ -34,7 +34,6 @@ def astar_search(map):
     while len(frontier) != 0:
         min_f_index = find_min_index(frontier, frontier_f)
         curr_frontier, parents_list = frontier[min_f_index]
-        temp_frontier_f = frontier_f[min_f_index] + len(parents_list)
 
         if curr_frontier == goal:
             found = True
@@ -61,6 +60,7 @@ def astar_search(map):
         if (curr_frontier[0] - 1 >= 0) and (check_available_cell(map, up_cell)):
             update_lists(frontier, frontier_f, curr_frontier, parents_list, up_cell, goal)
 
+        # Removing the current frontier from the frontier lists
         frontier.pop(min_f_index)
         frontier_f.pop(min_f_index)
 
