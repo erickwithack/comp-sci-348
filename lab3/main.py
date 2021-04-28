@@ -24,7 +24,8 @@ def check_result(title, map1, map2):
 		print("Test Result: " + bcolors.RED+"Failed"+bcolors.NORMAL)
 	return result
 	
-data1 = ("2000001111"
+data1 = (
+    "2000001111"
 "1111101111"
 "1111101111"
 "1001101111"
@@ -51,7 +52,8 @@ gold_df1 = ("5555551111"
 "1000000001")
 					 
 
-data2 = ("1000120011"
+data2 = (
+"1000120011"
 "1010101011"
 "1010101011"
 "1010101011"
@@ -64,7 +66,8 @@ data2 = ("1000120011"
 "1111111111"
 "1111111111")
 			  
-gold_df2 = ("1000155511"
+gold_df2 = (
+  "1000155511"
   "1010141511"
   "1014141511"
   "1014141511"
@@ -168,7 +171,7 @@ df1 = student_code.astar_search(dfmap1)
 tdf1 ="Reachable goal:"
 cdf1 = check_result(tdf1,dfmap1,gold_dfmap1)
 
-all_passed = all_passed and cdf1 and df1  
+all_passed = all_passed and cdf1 and df1
 
 gold_dfmap2 = common.init_map();
 common.set_map(gold_dfmap2, gold_df2)

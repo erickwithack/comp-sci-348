@@ -25,16 +25,16 @@ def astar_search(map):
                 goal = (y, x)
 
     # Finding the f(n) value of the start point
-    curr_frontier_f = Manhattan_dist(start, goal)
+    temp_frontier_f = Manhattan_dist(start, goal)
 
     # Adding start point to frontier
     frontier.append([start, parents_list])
-    frontier_f.append(curr_frontier_f)
+    frontier_f.append(temp_frontier_f)
 
     while len(frontier) != 0:
         min_f_index = find_min_index(frontier, frontier_f)
         curr_frontier, parents_list = frontier[min_f_index]
-        curr_frontier_f = frontier_f[min_f_index]
+        temp_frontier_f = frontier_f[min_f_index] + len(parents_list)
 
         if curr_frontier == goal:
             found = True
@@ -50,44 +50,27 @@ def astar_search(map):
         up_cell = (curr_frontier[0] - 1, curr_frontier[1])
 
         if (curr_frontier[1] + 1 <= MAP_WIDTH - 1) and (check_available_cell(map, right_cell)):
-            new_parents_list = parents_list[:]
-            curr_frontier_f = Manhattan_dist(right_cell, goal) + frontier_f[-1]
-            new_parents_list.append(curr_frontier)
-            frontier.append([right_cell, new_parents_list])
-            frontier_f.append(curr_frontier_f)
+            update_lists(frontier, frontier_f, curr_frontier, parents_list, right_cell, goal)
 
         if (curr_frontier[0] + 1 <= MAP_HEIGHT - 1) and (check_available_cell(map, down_cell)):
-            new_parents_list = parents_list[:]
-            curr_frontier_f = Manhattan_dist(down_cell, goal) + frontier_f[-1]
-            new_parents_list.append(curr_frontier)
-            frontier.append([down_cell, new_parents_list])
-            frontier_f.append(curr_frontier_f)
+            update_lists(frontier, frontier_f, curr_frontier, parents_list, down_cell, goal)
 
         if (curr_frontier[1] - 1 >= 0) and (check_available_cell(map, left_cell)):
-            new_parents_list = parents_list[:]
-            curr_frontier_f = Manhattan_dist(left_cell, goal) + frontier_f[-1]
-            new_parents_list.append(curr_frontier)
-            frontier.append([(left_cell), new_parents_list])
-            frontier_f.append(curr_frontier_f)
+            update_lists(frontier, frontier_f, curr_frontier, parents_list, left_cell, goal)
 
         if (curr_frontier[0] - 1 >= 0) and (check_available_cell(map, up_cell)):
-            new_parents_list = parents_list[:]
-            curr_frontier_f = Manhattan_dist(up_cell, goal) + frontier_f[-1]
-            new_parents_list.append(curr_frontier)
-            frontier.append([(up_cell), new_parents_list])
-            frontier_f.append(curr_frontier_f)
+            update_lists(frontier, frontier_f, curr_frontier, parents_list, up_cell, goal)
 
         frontier.pop(min_f_index)
         frontier_f.pop(min_f_index)
-    # print_map(map)
 
     # Marking path
-    if found == True:
+    if found:
         map[goal[0]][goal[1]] = 5
         for parent in parents_list:
             map[parent[0]][parent[1]] = 5
 
-    print_map(map)
+    # print_map(map)
     return found
 
 
@@ -132,6 +115,16 @@ def find_min_index(frontier, frontier_f):
                     continue
 
     return min_index
+
+
+def update_lists(frontier, frontier_f, curr_frontier, parents_list, cell, goal):
+    """ Updates the frontier lists
+    """
+    new_parents_list = parents_list[:]
+    temp_frontier_f = Manhattan_dist(cell, goal) + len(new_parents_list)
+    new_parents_list.append(curr_frontier)
+    frontier.append([cell, new_parents_list])
+    frontier_f.append(temp_frontier_f)
 
 
 def print_map(map):
