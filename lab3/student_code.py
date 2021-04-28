@@ -3,63 +3,140 @@ import common
 MAP_WIDTH = common.constants.MAP_WIDTH
 MAP_HEIGHT = common.constants.MAP_HEIGHT
 
+
 def astar_search(map):
-	# access the map using "map[y][x]"
-	# y between 0 and common.constants.MAP_HEIGHT-1
-	# x between 0 and common.constants.MAP_WIDTH-1
+    # access the map using "map[y][x]"
+    # y between 0 and common.constants.MAP_HEIGHT-1
+    # x between 0 and common.constants.MAP_WIDTH-1
 
-	# Initializing variables
-	found = False
-	visited = [[0] * (MAP_WIDTH - 1)] * (MAP_HEIGHT - 1)
-	parents_list = []
-	frontier = []
+    # Initializing variables
+    found = False
+    visited = [[0] * (MAP_WIDTH - 1)] * (MAP_HEIGHT - 1)
+    parents_list = []
+    frontier = []
+    frontier_f = []
 
-	# Finding start & goal points
-	for y in range(MAP_HEIGHT):
-		for x in range(MAP_WIDTH):
-			if map[y][x] == 2:
-				start = (y,x)
-			if map[y][x] == 3:
-				goal = (y,x)
-	
-	# Adding start point to frontier
-	frontier.append([start, parents_list])
+    # Finding start & goal points
+    for y in range(MAP_HEIGHT):
+        for x in range(MAP_WIDTH):
+            if map[y][x] == 2:
+                start = (y, x)
+            if map[y][x] == 3:
+                goal = (y, x)
 
-	while len(frontier) != 0:
-		curr_frontier, parents_list = frontier.pop(-1)
+    # Finding the f(n) value of the start point
+    curr_frontier_f = Manhattan_dist(start, goal)
 
-		if curr_frontier == goal:
-			found = True
-			break
+    # Adding start point to frontier
+    frontier.append([start, parents_list])
+    frontier_f.append(curr_frontier_f)
 
-		# Marking visited cells
-		map[curr_frontier[0]][curr_frontier[1]] = 4
+    while len(frontier) != 0:
+        min_f_index = find_min_index(frontier, frontier_f)
+        curr_frontier, parents_list = frontier[min_f_index]
+        curr_frontier_f = frontier_f[min_f_index]
 
-		# Checking frontier children
-		if (curr_frontier[0] - 1 >= 0) and (check_available_cell(map, curr_frontier[0] - 1, curr_frontier[1])):
-			new_parents_list = parents_list[:]
-			new_parents_list.append(curr_frontier)
-			frontier.append([(curr_frontier[0] - 1, curr_frontier[1]), new_parents_list])
+        if curr_frontier == goal:
+            found = True
+            break
 
-		if (curr_frontier[1] - 1 >= 0) and (check_available_cell(map, curr_frontier[0], curr_frontier[1] - 1)):
-			new_parents_list = parents_list[:]
-			new_parents_list.append(curr_frontier)
-			frontier.append([(curr_frontier[0], curr_frontier[1] - 1), new_parents_list])
+        # Marking visited cells
+        map[curr_frontier[0]][curr_frontier[1]] = 4
 
-		if (curr_frontier[0] + 1 <= MAP_HEIGHT - 1) and (check_available_cell(map, curr_frontier[0] + 1, curr_frontier[1])):
-			new_parents_list = parents_list[:]
-			new_parents_list.append(curr_frontier)
-			frontier.append([(curr_frontier[0] + 1, curr_frontier[1]), new_parents_list])
+        # Checking frontier children
+        right_cell = (curr_frontier[0], curr_frontier[1] + 1)
+        down_cell = (curr_frontier[0] + 1, curr_frontier[1])
+        left_cell = (curr_frontier[0], curr_frontier[1] - 1)
+        up_cell = (curr_frontier[0] - 1, curr_frontier[1])
 
-		if (curr_frontier[1] + 1 <= MAP_WIDTH - 1) and (check_available_cell(map, curr_frontier[0], curr_frontier[1] + 1)):
-			new_parents_list = parents_list[:]
-			new_parents_list.append(curr_frontier)
-			frontier.append([(curr_frontier[0], curr_frontier[1] + 1), new_parents_list])
+        if (curr_frontier[1] + 1 <= MAP_WIDTH - 1) and (check_available_cell(map, right_cell)):
+            new_parents_list = parents_list[:]
+            curr_frontier_f = Manhattan_dist(right_cell, goal) + frontier_f[-1]
+            new_parents_list.append(curr_frontier)
+            frontier.append([right_cell, new_parents_list])
+            frontier_f.append(curr_frontier_f)
 
-	# Marking path
-	if found == True:
-		map[goal[0]][goal[1]] = 5
-		for parent in parents_list:
-			map[parent[0]][parent[1]] = 5
-	
-	return found
+        if (curr_frontier[0] + 1 <= MAP_HEIGHT - 1) and (check_available_cell(map, down_cell)):
+            new_parents_list = parents_list[:]
+            curr_frontier_f = Manhattan_dist(down_cell, goal) + frontier_f[-1]
+            new_parents_list.append(curr_frontier)
+            frontier.append([down_cell, new_parents_list])
+            frontier_f.append(curr_frontier_f)
+
+        if (curr_frontier[1] - 1 >= 0) and (check_available_cell(map, left_cell)):
+            new_parents_list = parents_list[:]
+            curr_frontier_f = Manhattan_dist(left_cell, goal) + frontier_f[-1]
+            new_parents_list.append(curr_frontier)
+            frontier.append([(left_cell), new_parents_list])
+            frontier_f.append(curr_frontier_f)
+
+        if (curr_frontier[0] - 1 >= 0) and (check_available_cell(map, up_cell)):
+            new_parents_list = parents_list[:]
+            curr_frontier_f = Manhattan_dist(up_cell, goal) + frontier_f[-1]
+            new_parents_list.append(curr_frontier)
+            frontier.append([(up_cell), new_parents_list])
+            frontier_f.append(curr_frontier_f)
+
+        frontier.pop(min_f_index)
+        frontier_f.pop(min_f_index)
+    # print_map(map)
+
+    # Marking path
+    if found == True:
+        map[goal[0]][goal[1]] = 5
+        for parent in parents_list:
+            map[parent[0]][parent[1]] = 5
+
+    print_map(map)
+    return found
+
+
+def check_available_cell(map, curr_point):
+    """ checks if a cell was visited before
+    """
+    return map[curr_point[0]][curr_point[1]] not in [1, 4]
+
+
+def Manhattan_dist(curr_point, goal):
+    """ Finds the Manhattan distance of a point from the goal point
+    """
+    return abs(goal[0] - curr_point[0]) + abs(goal[1] - curr_point[1])
+
+
+def find_min_index(frontier, frontier_f):
+    """ Finds the index of the minimum value in a list
+    """
+    min_index = 0
+    min_element = frontier_f[min_index]
+
+    for i in range(1, len(frontier_f)):
+        if frontier_f[i] < min_element:
+            min_index = i
+            min_element = frontier_f[i]
+
+        elif frontier_f[i] == min_element:
+            curr_frontier, _ = frontier[i]
+            former_frontier, _ = frontier[min_index]
+
+            if curr_frontier[1] < former_frontier[1]:
+                min_index = i
+
+            elif curr_frontier[1] > former_frontier[1]:
+                continue
+
+            else:
+                if curr_frontier[0] < former_frontier[0]:
+                    min_index = i
+
+                if curr_frontier[0] > former_frontier[0]:
+                    continue
+
+    return min_index
+
+
+def print_map(map):
+    """ Prints the current map in a readable format
+    """
+    for row in map:
+        print(row)
+    print("\n")
