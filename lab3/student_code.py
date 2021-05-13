@@ -11,7 +11,6 @@ def astar_search(map):
 
     # Initializing variables
     found = False
-    visited = [[0] * (MAP_WIDTH - 1)] * (MAP_HEIGHT - 1)
     parents_list = []
     frontier = []
     frontier_f = []
