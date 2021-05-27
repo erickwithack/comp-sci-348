@@ -26,11 +26,11 @@ def drone_flight_planner (map, policies, values, delivery_fee, battery_drop_cost
 				values[y][x] = -dronerepair_cost
 				policies[y][x] = common.constants.EXIT
 	
-	# Initialize counter and value margin for correctness
+	# Initialize value margin for correctness
 	margin = 10000
 
 	while True:
-		# Increase counter and initialize value margin for correctness
+		# Initialize value margin for correctness
 		margin = 0
 		margin_flag = True
 		old_values = [x[:] for x in values]
@@ -54,32 +54,24 @@ def drone_flight_planner (map, policies, values, delivery_fee, battery_drop_cost
 	return values[start[0]][start[1]]
 
 
-def find_next_values(map, values, delivery_fee, battery_drop_cost, dronerepair_cost, gamma, y, x):
+def find_next_values(map, values, delivery_fee, battery_cost, repair_cost, gamma, y, x):
 	south_val = find_current_values(values, y + 1, x)
-	west_val = find_current_values(values, y, x - 1)
+	west_val =  find_current_values(values, y, x - 1)
 	north_val = find_current_values(values, y - 1, x)
-	east_val = find_current_values(values, y, x + 1)
+	east_val =  find_current_values(values, y, x + 1)
 
-	reward_off = find_reward(map, delivery_fee, battery_drop_cost, dronerepair_cost, False, y, x)
-	reward_on = find_reward(map, delivery_fee, battery_drop_cost, dronerepair_cost, True, y, x)
+	reward_off = find_reward(map, delivery_fee, battery_cost, repair_cost, False, y, x)
+	reward_on =  find_reward(map, delivery_fee, battery_cost, repair_cost, True, y, x)
 
-	south_off = get_direction_value(reward_off, False, gamma,
-									south_val, east_val, west_val)
-	west_off = get_direction_value(reward_off, False, gamma,
-								   west_val, south_val, north_val)
-	north_off = get_direction_value(reward_off, False, gamma,
-									north_val, east_val, west_val)
-	east_off = get_direction_value(reward_off, False, gamma,
-								   east_val, south_val, north_val)
+	south_off = get_direction_value(reward_off, False, gamma, south_val, east_val, west_val)
+	west_off =  get_direction_value(reward_off, False, gamma, west_val, south_val, north_val)
+	north_off = get_direction_value(reward_off, False, gamma, north_val, east_val, west_val)
+	east_off =  get_direction_value(reward_off, False, gamma, east_val, south_val, north_val)
 
-	south_on = get_direction_value(reward_on, True, gamma,
-								   south_val, east_val, west_val)
-	west_on = get_direction_value(reward_on, True, gamma,
-								  west_val, south_val, north_val)
-	north_on = get_direction_value(reward_on, True, gamma,
-								   north_val, east_val, west_val)
-	east_on = get_direction_value(reward_on, True, gamma,
-								  east_val, south_val, north_val)
+	south_on = get_direction_value(reward_on, True, gamma, south_val, east_val, west_val)
+	west_on =  get_direction_value(reward_on, True, gamma, west_val, south_val, north_val)
+	north_on = get_direction_value(reward_on, True, gamma, north_val, east_val, west_val)
+	east_on =  get_direction_value(reward_on, True, gamma, east_val, south_val, north_val)
 
 	value_list = [south_off, west_off, north_off, east_off,
 				  south_on, west_on, north_on, east_on]
@@ -88,23 +80,22 @@ def find_next_values(map, values, delivery_fee, battery_drop_cost, dronerepair_c
 
 
 def get_partial_direction_value(reward, gamma, direction):
-	direction_value = reward + gamma*direction
+	partial_direction_value = reward + gamma * direction
 	
-	return direction_value
+	return partial_direction_value
 
 
-def get_direction_value(reward, special_propulsion, gamma, main_direction, right_direction, left_direction):
+def get_direction_value(reward, special_propulsion, gamma, main_dir, right_dir, left_dir):
 	if special_propulsion:
-		
-		tot_direction_value = 0.8*get_partial_direction_value(reward, gamma, main_direction)\
-							+ 0.1*get_partial_direction_value(reward, gamma, right_direction)\
-							+ 0.1*get_partial_direction_value(reward, gamma, left_direction)
+		direction_value = 0.8 * get_partial_direction_value(reward, gamma, main_dir)\
+						+ 0.1 * get_partial_direction_value(reward, gamma, right_dir)\
+						+ 0.1 * get_partial_direction_value(reward, gamma, left_dir)
 	else:
-		tot_direction_value = 0.7*get_partial_direction_value(reward, gamma, main_direction)\
-						   + 0.15*get_partial_direction_value(reward, gamma, right_direction)\
-						   + 0.15*get_partial_direction_value(reward, gamma, left_direction)
+		direction_value = 0.7 * get_partial_direction_value(reward, gamma, main_dir)\
+					   + 0.15 * get_partial_direction_value(reward, gamma, right_dir)\
+					   + 0.15 * get_partial_direction_value(reward, gamma, left_dir)
 
-	return tot_direction_value
+	return direction_value
 
 
 def find_current_values(values, y, x):
@@ -123,15 +114,15 @@ def find_current_values(values, y, x):
 	return values[y][x]
 
 
-def find_reward(map, delivery_fee, battery_drop_cost, dronerepair_cost, special_propulsion, y, x):
+def find_reward(map, delivery_fee, battery_cost, repair_cost, special_propulsion, y, x):
 	current_reward = 0
 
 	# If current cell is empty or the pizza shop
 	if map[y][x] <= 1:
 		if not special_propulsion:
-			current_reward = -battery_drop_cost
+			current_reward = -battery_cost
 		else:
-			current_reward = -2*battery_drop_cost
+			current_reward = -2*battery_cost
 
 	# If current cell is customer
 	elif map[y][x] == common.constants.CUSTOMER:				
@@ -139,6 +130,6 @@ def find_reward(map, delivery_fee, battery_drop_cost, dronerepair_cost, special_
 
 	# If current cell is rival
 	elif map[y][x] == common.constants.RIVAL:				
-		current_reward = -dronerepair_cost
+		current_reward = -repair_cost
 
 	return current_reward
