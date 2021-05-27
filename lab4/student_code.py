@@ -1,5 +1,8 @@
 import common
 
+TICTACTOE_WIDTH = 3
+TICTACTOE_HEIGHT = 3
+
 
 def minmax_tictactoe(board, turn):
     """ Returns an integer representing the winner of the game under optimal play,
@@ -47,11 +50,11 @@ def max_value(board, a, b):
         return 0
 
     # If game is not finished - check the value of v
-    for i in range(3):
-        for j in range(3):
-            if common.get_cell(board, i, j) == common.constants.NONE:
+    for y in range(TICTACTOE_HEIGHT):
+        for x in range(TICTACTOE_WIDTH):
+            if common.get_cell(board, y, x) == common.constants.NONE:
                 new_board = board[:]
-                common.set_cell(new_board, i, j, common.constants.X)
+                common.set_cell(new_board, y, x, common.constants.X)
                 v = max(v, min_value(new_board, a, b))
 
                 # For abprun_tictactoe()
@@ -82,11 +85,11 @@ def min_value(board, a, b):
         return 0
 
     # If game is not finished - check the value of v
-    for i in range(3):
-        for j in range(3):
-            if common.get_cell(board, i, j) == common.constants.NONE:
+    for y in range(TICTACTOE_HEIGHT):
+        for x in range(TICTACTOE_WIDTH):
+            if common.get_cell(board, y, x) == common.constants.NONE:
                 new_board = board[:]
-                common.set_cell(new_board, i, j, common.constants.O)
+                common.set_cell(new_board, y, x, common.constants.O)
                 v = min(v, max_value(new_board, a, b))
 
                 # For abprun_tictactoe()
