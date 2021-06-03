@@ -97,7 +97,7 @@ def run_experiment2(filename):
 	error=0
 	for i in range(common.constants.TEST_SIZE):
 		if(test_data[i][common.constants.DATA_DIM]!=gold_data[i]):
-			print("error is data", test_data[i])
+			# print("error is data", test_data[i])
 			error+=1
 	
 	print ("Incorrect classification is "+str(error)+" out of " + str(common.constants.TEST_SIZE))
