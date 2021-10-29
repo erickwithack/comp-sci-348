@@ -107,7 +107,8 @@ def num_of_attacks_for_point(board, row_index, col_index):
     diag_down_left = []
 
     # Calculate the number of attacks from queens in the same row
-    count += sum(board[row_index][:col_index]) + sum(board[row_index][col_index + 1:])
+    count += sum(board[row_index][:col_index]) + \
+        sum(board[row_index][col_index + 1:])
 
     # Compute lists of diagonals for the current point (up_left and down_left)
     for j in range(col_index):
@@ -124,7 +125,8 @@ def num_of_attacks_for_point(board, row_index, col_index):
             diag_down_right.append(board[row_index + (k - col_index)][k])
 
     # Calculate the number of attacks from queens in the same diagonal
-    count += sum(diag_up_right) + sum(diag_down_right) + sum(diag_up_left) + sum(diag_down_left)
+    count += sum(diag_up_right) + sum(diag_down_right) + \
+        sum(diag_up_left) + sum(diag_down_left)
 
     return count
 
@@ -136,4 +138,3 @@ def print_board(board):
     for row in board:
         print(row)
     print("\n")
-

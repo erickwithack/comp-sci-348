@@ -72,5 +72,5 @@ def get_points(image):
         for x in range(WIDTH):
             if image[y][x] == 0:
                 point_list.append((x, y))
-                
+
     return point_list

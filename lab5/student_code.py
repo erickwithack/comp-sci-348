@@ -33,7 +33,6 @@ def sudoku_forwardchecking(sudoku):
     return variables.counter
 
 
-
 ############## Helper Functions ##############
 
 def recursive_backtracking(variables, sudoku):
@@ -100,12 +99,14 @@ def recursive_forwardtracking(variables, sudoku, domain):
 
                         # Update a copy of the domain
                         new_domain = copy_board(domain.copy())
-                        updated_domain, is_full_domain = update_domain(new_domain, y, x, value)
+                        updated_domain, is_full_domain = update_domain(
+                            new_domain, y, x, value)
 
                         if is_full_domain:
                             # Set cell with value
                             sudoku = set_cell(sudoku, y, x, value)
-                            result = recursive_forwardtracking(variables, sudoku, updated_domain)
+                            result = recursive_forwardtracking(
+                                variables, sudoku, updated_domain)
 
                             if result:
                                 return True
@@ -163,7 +164,7 @@ def check_complete(sudoku):
         for x in range(SUDOKU_WIDTH):
             if check_available(sudoku, y, x):
                 return False
-            
+
             # Check cell constraints
             if not (check_available(sudoku, y, x)):
                 value = sudoku[y][x]

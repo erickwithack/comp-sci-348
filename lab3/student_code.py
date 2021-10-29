@@ -48,16 +48,20 @@ def astar_search(map):
         up_cell = (curr_frontier[0] - 1, curr_frontier[1])
 
         if (curr_frontier[1] + 1 <= MAP_WIDTH - 1) and (check_available_cell(map, right_cell)):
-            update_lists(frontier, frontier_f, curr_frontier, parents_list, right_cell, goal)
+            update_lists(frontier, frontier_f, curr_frontier,
+                         parents_list, right_cell, goal)
 
         if (curr_frontier[0] + 1 <= MAP_HEIGHT - 1) and (check_available_cell(map, down_cell)):
-            update_lists(frontier, frontier_f, curr_frontier, parents_list, down_cell, goal)
+            update_lists(frontier, frontier_f, curr_frontier,
+                         parents_list, down_cell, goal)
 
         if (curr_frontier[1] - 1 >= 0) and (check_available_cell(map, left_cell)):
-            update_lists(frontier, frontier_f, curr_frontier, parents_list, left_cell, goal)
+            update_lists(frontier, frontier_f, curr_frontier,
+                         parents_list, left_cell, goal)
 
         if (curr_frontier[0] - 1 >= 0) and (check_available_cell(map, up_cell)):
-            update_lists(frontier, frontier_f, curr_frontier, parents_list, up_cell, goal)
+            update_lists(frontier, frontier_f, curr_frontier,
+                         parents_list, up_cell, goal)
 
         # Removing the current frontier from the frontier lists
         frontier.pop(min_f_index)
