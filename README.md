@@ -1,4 +1,4 @@
-# CS348-IntroToAI
+# Intro to AI
 
 A repository for CS348-Intro to AI (2021) homework.
 
